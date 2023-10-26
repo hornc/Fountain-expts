@@ -24,11 +24,11 @@ Intro<f> ::=
     "They claim that the ?bits have been put into a " Bellstate 
     "Depending on the measured results of the ?bits, they make their individual lunch orders. "
     Para 
-  | "";
+  | <. f > 1 .> "";
 
 Day<f> ::=
     <. f = 1.> "On the first day "
-  | "The next day "
+  | <. f > 1 .> "The next day "
 ;
 
 P1 ::= "Zena";
@@ -42,5 +42,7 @@ Choice<b> ::=
 ;
 
 Also<a,b> ::=
-    <. a = b .> " also" | ""
+    <. a = b .> " also"
+  | <. a > b .> ""
+  | <. a < b .> ""
 ;
