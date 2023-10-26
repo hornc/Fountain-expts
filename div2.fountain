@@ -4,11 +4,11 @@
 
 Goal ::= <. c = a .> OddEven<c> Div2<a> Display<a>;
 
-
 // Display <n> asterisks.
 Display<n> ::=
-  <. b = 1 .> <. n > 0 .> { "*" <. b += 1 .> } <. b > n .> |
-  "";
+    <. b = 1 .> <. n > 0 .> { "*" <. b += 1 .> } <. b > n .>
+  | <. n < 1 .> ""
+;
 
 // Divide a by 2, result is an int
 Div2<a> ::= <. b = a .> { "" <. b -= 2 .> <. a -= 1 .> } <. b < 1 .>;
@@ -17,4 +17,12 @@ Div2<a> ::= <. b = a .> { "" <. b -= 2 .> <. a -= 1 .> } <. b < 1 .>;
 Mul2<a> ::= <. a += a .> "";
 
 // Report whether a is Odd or Even
-OddEven<a> ::= <. a = 0 .> "Even " | <. a < 0 .> "" | <. c = a .> Div2<c> Mul2<c> <. c -= a .> <. c = 0 .> "Even " | <. c = 1 .> "Odd  ";
+OddEven<a> ::=
+    <. a < 0 .> ""
+  | <. a = 0 .> "Even "
+  | <. a = 1 .> "Odd  "
+  | <. a > 1 .> <. c = a .> Div2<c> Mul2<c> <. c -= a .> (
+        <. c = 0 .> "Even "
+      | <. c = -1 .> "Odd  "
+  )
+;
