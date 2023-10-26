@@ -1,0 +1,33 @@
+Goal ::=
+   <. rounds = 0 .> <. a = 1 .> <. drop = 0 .>
+   { Round<a, rounds, drop> "" <. rounds += 1 .> <. drop += 1 .> }
+   <. rounds > 50 .>
+;
+
+Round<a, rounds, drop> ::=
+    ( 
+         <. drop = 3 .> Drop<a>
+       | <. drop = 7 .>  Catch<a> <. drop -= 7 .>
+       | Catch<a> 
+    ) #10
+;
+
+Catch<a> ::= Thrower<a> " throws the ball to " Catcher<a> ". " ;
+
+Drop<a> ::= "    Oh no! " Thrower<a> " dropped the ball!" #10 Recover<a>;
+
+Recover<a> ::=
+    Thrower<a>
+    " fetches the ball and throws it back to "
+    Catcher<a> ". "
+;
+
+Thrower<a> ::= 
+    <. a > 0 .> "Anise"
+  | <. a < 1 .> "Blaschko"
+;
+
+Catcher<a> ::= 
+    <. a < 1 .> "Anise" <. a += 1 .>
+  | <. a > 0 .> "Blaschko" <. a -= 1 .>
+;
