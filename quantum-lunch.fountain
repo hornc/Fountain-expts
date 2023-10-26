@@ -1,0 +1,46 @@
+// Zena and Xavier's quantum lunch.
+// The values of the two ?bits should be provided to this grammar pre-measured
+//    z= and x=
+// If first=1 it will generate an intro, otherwise just the current day's lunch order.
+
+// The vague intent behind this is to see if we can use CSL parsing of a generated narrative to determine whether 
+// a Bell inquality is violated and decide whether the ?bits are real qubits, and have been
+// authentically quantum entangeld....
+
+// Example usage for classical independantly random bit measurements:
+//    for i in {1..100}; do ./bin/fountain.exe generate quantum-lunch.fountain x=$(( $RANDOM % 2)) z=$(( $RANDOM % 2)) first=$i ; done
+
+
+Goal ::= Intro<first> Day<first> P1 " chooses the " Choice<z> ". " P2 Also<z,x> " chooses the " Choice<x> ".";
+
+Title ::= "Zena and Xavier's Quantum Lunch.";
+
+Intro<f> ::= 
+    <. f = 1 .>
+    Title Para
+    P1 " and " P2 " work together in a lab. "
+    "Every day they have lunch together at the cafeteria. "
+    "They use a pair of ?bits to sychronise their orders. "
+    "They claim that the ?bits have been put into a " Bellstate 
+    "Depending on the measured results of the ?bits, they make their individual lunch orders. "
+    Para 
+  | "";
+
+Day<f> ::=
+    <. f = 1.> "On the first day "
+  | "The next day "
+;
+
+P1 ::= "Zena";
+P2 ::= "Xavier";
+Bellstate ::= "particular Bell-state. ";
+Para ::= #10 #10;
+
+Choice<b> ::= 
+    <. b = 1 .> "burger"
+  | <. b = 0 .> "salad"
+;
+
+Also<a,b> ::=
+    <. a = b .> " also" | ""
+;
