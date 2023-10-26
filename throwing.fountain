@@ -6,13 +6,19 @@ Goal ::=
 
 Round<a, rounds, drop> ::=
     ( 
-         <. drop = 3 .> Drop<a>
-       | <. drop = 7 .>  Catch<a> <. drop -= 7 .>
-       | Catch<a> 
-    ) #10
+          <. drop = 3 .> Drop<a>
+        | <. drop < 3 .> Catch<a>
+        | <. drop > 3 .> Catch<a>
+    )
+    (
+          <. drop = 7 .>  "" <. drop -= 7 .>
+        | <. drop < 7 .>  ""
+        | <. drop > 7 .>  ""
+    )
+    #10
 ;
 
-Catch<a> ::= Thrower<a> " throws the ball to " Catcher<a> ". " ;
+Catch<a> ::= Thrower<a> " throws the ball to " Catcher<a> ". ";
 
 Drop<a> ::= "    Oh no! " Thrower<a> " dropped the ball!" #10 Recover<a>;
 
@@ -27,7 +33,7 @@ Thrower<a> ::=
   | <. a < 1 .> "Blaschko"
 ;
 
-Catcher<a> ::= 
+Catcher<a> ::=
     <. a < 1 .> "Anise" <. a += 1 .>
   | <. a > 0 .> "Blaschko" <. a -= 1 .>
 ;
