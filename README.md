@@ -1,2 +1,2 @@
 # Fountain-expts
-Fountain CSL grammar experiments
+[Fountain](https://github.com/catseye/Fountain) CSL grammar experiments.
