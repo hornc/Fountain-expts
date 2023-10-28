@@ -1,14 +1,17 @@
 // Goal ::= <. steps = 0 .> { Shift<a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p> #10 <. steps += 1 .> } <. steps > 7 .>;
 
 Goal ::=
-    To16BitArray<seed,a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p>
-    #10
-    "seed in hex is: "
-    Hex<a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p>
-    #10
-    // "bitshift left by 7: "
-    // LS7<a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p>
-    Hex<a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p>
+    <. seed = 0 .> "Please supply a (non-zero) seed using seed=" |
+    <. seed > 0 .> (
+        To16BitArray<seed,a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p>
+        #10
+        "seed in hex is: "
+        Hex<a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p>
+        #10
+        // "bitshift left by 7: "
+        // LS7<a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p>
+        Hex<a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p>
+    )
 ;
 
 To16BitArray<val,a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p> ::=
