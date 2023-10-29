@@ -1,4 +1,6 @@
-// Goal ::= <. steps = 0 .> { Shift<a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p> #10 <. steps += 1 .> } <. steps > 7 .>;
+// Attempt at implementing a simple 16 bit pseudo-random number generator (PRNG)
+// http://www.retroprogramming.com/2017/07/xorshift-pseudorandom-numbers-in-z80.html
+// in a Fountatin grammar.
 
 Goal ::=
     <. seed = 0 .> "Please supply a (non-zero) seed using seed=" |
@@ -9,9 +11,9 @@ Goal ::=
         Hex<a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p>
         #10
         // "bitshift left by 7: "
-        // LS7<a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p>
-        // LS<a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p>
-        LS<a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p>
+        RS9<a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p>
+        //ArithmeticRS9<seed>
+        //To16BitArray<seed,a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p>
         Hex<a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p>
     )
 ;
@@ -73,14 +75,24 @@ Xor<a, b> ::= <. a = b .> "False" | "True";
 
 Xor16<a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,aa,bb,cc,dd,ee,ff,gg,hh,ii,jj,kk,ll,mm,nn,oo,pp> ::= ;
 
-// http://www.retroprogramming.com/2017/07/xorshift-pseudorandom-numbers-in-z80.html
+
 
 XS<a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p> ::= ;
 
-LS7<a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p> ::= <. repeat = 0 .> { LS<a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p> <. repeat += 1 .> } <. repeat > 6 .> ;
-RS9<a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p> ::= <. repeat = 0 .> { RS<a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p> <. repeat += 1 .> } <. repeat > 8 .> ;
-LS8<a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p> ::= <. repeat = 0 .> { LS<a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p> <. repeat += 1 .> } <. repeat > 7 .> ;
 
+// Interated left and right bit-shifts.
+LS7<a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p> ::= <. repeat = 0 .> { LS<a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p> <. repeat += 1 .> } <. repeat > 6 .>;
+RS9<a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p> ::= <. repeat = 0 .> { RS<a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p> <. repeat += 1 .> } <. repeat > 8 .>;
+LS8<a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p> ::= <. repeat = 0 .> { LS<a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p> <. repeat += 1 .> } <. repeat > 7 .>;
+
+
+// Arithmetic versions of the above, using a single int variable. (appear to be slower)
+ArithmeticLS7<x> ::= <. repeat = 0 .> { Mul2<x> <. repeat += 1 .> } <. repeat > 6 .>;
+ArithmeticRS9<x> ::= <. repeat = 0 .> { Div2<x> <. repeat += 1 .> } <. repeat > 8 .>;
+ArithmeticLS8<x> ::= <. repeat = 0 .> { Mul2<x> <. repeat += 1 .> } <. repeat > 7 .>;
+
+
+// Right-shift a 16 bit array by one.
 RS<a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p> ::=
 ( <. && a = 1, b = 0 .> "" <. a -= 1 .>
 | <. && a = 0, b = 1 .> "" <. a += 1 .>
@@ -146,6 +158,8 @@ RS<a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p> ::=
 | <. p = 0 .> "")
 ;
 
+
+// Left-shift a 16 bit array by one.
 LS<a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p> ::=
 ( <. && p = 1, o = 0 .> "" <. p -= 1 .>
 | <. && p = 0, o = 1 .> "" <. p += 1 .>
