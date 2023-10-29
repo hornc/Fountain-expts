@@ -1,0 +1,46 @@
+Goal ::=
+     <. a = 0 .> "ε LOOP:" Loop<a>
+   | <. a = 1 .> "a LOOP:" Loop<a>
+   | <. a > 1 .> "NO LOOP"
+;
+
+Loop<a> ::=
+     <. a = 0 .> Loop<a>
+   | <. a = 1 .> "a" Loop<a>
+;
+
+
+// Tests:
+// fountain.exe parse infinite-loop.fountain <(echo -n "NO LOOP") a=1
+// ===> Failure
+
+// fountain.exe parse infinite-loop.fountain <(echo -n "NO LOOP") a=10
+// ===> Success 
+
+// fountain.exe parse infinite-loop.fountain <(echo -n "a LOOP:aaaaaaaa") a=1
+// ===> Failure
+// Is correct, because only an infinte number of "a" will be generated. No finite number is valid.
+
+// fountain.exe parse infinite-loop.fountain <(echo -n "ε LOOP:") a=1
+// ===> Failure
+
+// This is the interesting one:
+// fountain.exe parse infinite-loop.fountain <(echo -n "ε LOOP:") a=0
+//
+// ... no output, does not terminate.
+// Was hoping for a Success since there are infinite ε at the input tail.
+
+
+// fountain.exe parse infinite-loop.fountain <(echo -n "ε LOOP:a") a=0
+//
+// also does not terminate.
+
+
+// Generation behaves as expected with
+// fountain.exe generate infinite-loop.fountain a=0
+//    and
+// fountain.exe generate infinite-loop.fountain a=1
+// not terminating (the desired infinite loops)
+//    and something like
+// fountain.exe generate infinite-loop.fountain a=10
+// ===> NO LOOP
