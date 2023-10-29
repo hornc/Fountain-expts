@@ -6,16 +6,14 @@ Goal ::=
     <. seed = 0 .> "Please supply a (non-zero) seed using seed=" |
     <. seed > 0 .> (
         To16BitArray<seed,a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p>
-        #10
-        "seed in hex is: "
-        Hex<a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p>
-        #10
-        " Xorshift:"
-        Xorshift<a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p>
-        //ArithmeticRS9<seed>
-        //To16BitArray<seed,a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p>
-        Hex<a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p>
+        <. steps = 0 .> { Xs<a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p> <. steps += 1 .> } <. steps > 50 .>
     )
+;
+
+// Xorshift a 16 bit array and display the result as hex.
+Xs<a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p> ::=
+    Xorshift<a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p>
+    Hex<a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p> #10
 ;
 
 To16BitArray<val,a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p> ::=
