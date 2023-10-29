@@ -5,15 +5,29 @@
 Goal ::=
     <. seed = 0 .> "Please supply a (non-zero) seed using seed=" |
     <. seed > 0 .> (
+        "Seed   : Coin toss" #10
         To16BitArray<seed,a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p>
-        <. steps = 0 .> { Xs<a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p> <. steps += 1 .> } <. steps > 50 .>
+        <. steps = 0 .> {
+            Xs<a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p>
+            ToInt<seed,a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p>
+            CoinToss<seed>
+            <. steps += 1 .>
+        } <. steps > 50 .>
     )
 ;
+
+
+CoinToss<n> ::=
+    " : "
+    (<. n < 32768 .> "Heads" | <. n >= 32768 .> "Tails")
+    #10
+;
+
 
 // Xorshift a 16 bit array and display the result as hex.
 Xs<a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p> ::=
     Xorshift<a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p>
-    Hex<a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p> #10
+    Hex<a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p>
 ;
 
 To16BitArray<val,a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p> ::=
@@ -48,6 +62,43 @@ To16BitArray<val,a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p> ::=
     <. o = val .> Lsb<o>
     Div2<val>
     <. p = val .> Lsb<p>
+;
+
+
+ToInt<val,a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p> ::=
+    <. val -= val .>
+    <. tmp = 1 .>
+    (<. a = 1 .> "" <. val += tmp .> | <. a = 0 .> "")
+    Mul2<tmp>
+    (<. b = 1 .> "" <. val += tmp .> | <. b = 0 .> "")
+    Mul2<tmp>
+    (<. c = 1 .> "" <. val += tmp .> | <. c = 0 .> "")
+    Mul2<tmp>
+    (<. d = 1 .> "" <. val += tmp .> | <. d = 0 .> "")
+    Mul2<tmp>
+    (<. e = 1 .> "" <. val += tmp .> | <. e = 0 .> "")
+    Mul2<tmp>
+    (<. f = 1 .> "" <. val += tmp .> | <. f = 0 .> "")
+    Mul2<tmp>
+    (<. g = 1 .> "" <. val += tmp .> | <. g = 0 .> "")
+    Mul2<tmp>
+    (<. h = 1 .> "" <. val += tmp .> | <. h = 0 .> "")
+    Mul2<tmp>
+    (<. i = 1 .> "" <. val += tmp .> | <. i = 0 .> "")
+    Mul2<tmp>
+    (<. j = 1 .> "" <. val += tmp .> | <. j = 0 .> "")
+    Mul2<tmp>
+    (<. k = 1 .> "" <. val += tmp .> | <. k = 0 .> "")
+    Mul2<tmp>
+    (<. l = 1 .> "" <. val += tmp .> | <. l = 0 .> "")
+    Mul2<tmp>
+    (<. m = 1 .> "" <. val += tmp .> | <. m = 0 .> "")
+    Mul2<tmp>
+    (<. n = 1 .> "" <. val += tmp .> | <. n = 0 .> "")
+    Mul2<tmp>
+    (<. o = 1 .> "" <. val += tmp .> | <. o = 0 .> "")
+    Mul2<tmp>
+    (<. p = 1 .> "" <. val += tmp .> | <. p = 0 .> "")
 ;
 
 
