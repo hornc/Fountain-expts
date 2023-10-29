@@ -1,6 +1,6 @@
 // Attempt at implementing a simple 16 bit pseudo-random number generator (PRNG)
 // http://www.retroprogramming.com/2017/07/xorshift-pseudorandom-numbers-in-z80.html
-// in a Fountatin grammar.
+// using a Fountain grammar.
 
 Goal ::=
     <. seed = 0 .> "Please supply a (non-zero) seed using seed=" |
