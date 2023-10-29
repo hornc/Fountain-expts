@@ -1,0 +1,359 @@
+// Supply a seed with seed=
+// seed=0 will prevent the ball from being dropped.
+
+Goal ::=
+   // 1 in ten chance to drop the ball:
+   <. thres = 58982 .>
+   // 1 in 3 chance to drop ball:
+   // <. thres = 43690 .>
+   // 1 in 80 chance, probably won't happen in 50 rounds:
+   // <. thres = 64716 .>
+
+   <. a = 1 .>
+  
+   Thrower<a> " has the ball." #10 
+
+   <. rounds = 0 .>
+   { Round<a, rounds, seed, thres> "" <. rounds += 1 .> }
+   <. rounds > 50 .>
+;
+
+Round<catcher, rounds, seed, thres> ::=
+    To16BitArray<seed,a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p>
+    Xorshift<a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p>
+    ToInt<seed,a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p>
+    ( <. seed <  thres .> Catch<catcher>
+    | <. seed >= thres .> Drop<catcher>)
+    #10
+;
+
+Catch<a> ::= Thrower<a> " throws the ball to " Catcher<a> ". ";
+
+Drop<a> ::= "    Oh no! " Thrower<a> " dropped the ball!" #10 Recover<a>;
+
+Recover<a> ::=
+    Thrower<a>
+    " fetches the ball and throws it back to "
+    Catcher<a> ". "
+;
+
+Thrower<a> ::= 
+    <. a > 0 .> "Anise"
+  | <. a < 1 .> "Blaschko"
+;
+
+Catcher<a> ::=
+    <. a < 1 .> "Anise" <. a += 1 .>
+  | <. a > 0 .> "Blaschko" <. a -= 1 .>
+;
+
+
+// ===== PRNG productions =====
+
+
+// Convert val to 16 bit array <a..p>.
+To16BitArray<val,a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p> ::=
+    <. a = val .> Lsb<a>
+    Div2<val>
+    <. b = val .> Lsb<b>
+    Div2<val>
+    <. c = val .> Lsb<c>
+    Div2<val>
+    <. d = val .> Lsb<d>
+    Div2<val>
+    <. e = val .> Lsb<e>
+    Div2<val>
+    <. f = val .> Lsb<f>
+    Div2<val>
+    <. g = val .> Lsb<g>
+    Div2<val>
+    <. h = val .> Lsb<h>
+    Div2<val>
+    <. i = val .> Lsb<i>
+    Div2<val>
+    <. j = val .> Lsb<j>
+    Div2<val>
+    <. k = val .> Lsb<k>
+    Div2<val>
+    <. l = val .> Lsb<l>
+    Div2<val>
+    <. m = val .> Lsb<m>
+    Div2<val>
+    <. n = val .> Lsb<n>
+    Div2<val>
+    <. o = val .> Lsb<o>
+    Div2<val>
+    <. p = val .> Lsb<p>
+;
+
+
+// Convert 16 bit array <a..p> back to val.
+ToInt<val,a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p> ::=
+    <. val -= val .>
+    <. tmp = 1 .>
+    (<. a = 1 .> "" <. val += tmp .> | <. a = 0 .> "")
+    Mul2<tmp>
+    (<. b = 1 .> "" <. val += tmp .> | <. b = 0 .> "")
+    Mul2<tmp>
+    (<. c = 1 .> "" <. val += tmp .> | <. c = 0 .> "")
+    Mul2<tmp>
+    (<. d = 1 .> "" <. val += tmp .> | <. d = 0 .> "")
+    Mul2<tmp>
+    (<. e = 1 .> "" <. val += tmp .> | <. e = 0 .> "")
+    Mul2<tmp>
+    (<. f = 1 .> "" <. val += tmp .> | <. f = 0 .> "")
+    Mul2<tmp>
+    (<. g = 1 .> "" <. val += tmp .> | <. g = 0 .> "")
+    Mul2<tmp>
+    (<. h = 1 .> "" <. val += tmp .> | <. h = 0 .> "")
+    Mul2<tmp>
+    (<. i = 1 .> "" <. val += tmp .> | <. i = 0 .> "")
+    Mul2<tmp>
+    (<. j = 1 .> "" <. val += tmp .> | <. j = 0 .> "")
+    Mul2<tmp>
+    (<. k = 1 .> "" <. val += tmp .> | <. k = 0 .> "")
+    Mul2<tmp>
+    (<. l = 1 .> "" <. val += tmp .> | <. l = 0 .> "")
+    Mul2<tmp>
+    (<. m = 1 .> "" <. val += tmp .> | <. m = 0 .> "")
+    Mul2<tmp>
+    (<. n = 1 .> "" <. val += tmp .> | <. n = 0 .> "")
+    Mul2<tmp>
+    (<. o = 1 .> "" <. val += tmp .> | <. o = 0 .> "")
+    Mul2<tmp>
+    (<. p = 1 .> "" <. val += tmp .> | <. p = 0 .> "")
+;
+
+
+// Divide <a> by 2, result is an int.
+Div2<a> ::=
+    <. a = 0 .> ""
+  | <. a > 0 .> <. b = a .> { "" <. b -= 2 .> <. a -= 1 .> } <. b < 1 .>
+;
+
+
+// Mult <a> by 2.
+Mul2<a> ::= <. a += a .> "";
+
+
+// Return least significant bit of <a> (result overwrites <a>).
+Lsb<a> ::=
+    <. a = 0 .> ""
+  | <. a = 1 .> ""
+  | <. a > 1 .> <. c = a .> Div2<c> Mul2<c> <. a -= c .>
+;
+
+
+// Xorshift algorithm (7, 9 ,8), from:
+// http://www.retroprogramming.com/2017/07/xorshift-pseudorandom-numbers-in-z80.html
+Xorshift<a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p> ::=
+    Copy16<a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,aa,bb,cc,dd,ee,ff,gg,hh,ii,jj,kk,ll,mm,nn,oo,pp>
+    LS7<aa,bb,cc,dd,ee,ff,gg,hh,ii,jj,kk,ll,mm,nn,oo,pp>
+    Xor16<a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,aa,bb,cc,dd,ee,ff,gg,hh,ii,jj,kk,ll,mm,nn,oo,pp>
+
+    Copy16x<a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,aa,bb,cc,dd,ee,ff,gg,hh,ii,jj,kk,ll,mm,nn,oo,pp>
+    RS9<aa,bb,cc,dd,ee,ff,gg,hh,ii,jj,kk,ll,mm,nn,oo,pp>
+    Xor16<a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,aa,bb,cc,dd,ee,ff,gg,hh,ii,jj,kk,ll,mm,nn,oo,pp>
+
+    Copy16x<a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,aa,bb,cc,dd,ee,ff,gg,hh,ii,jj,kk,ll,mm,nn,oo,pp>
+    LS8<aa,bb,cc,dd,ee,ff,gg,hh,ii,jj,kk,ll,mm,nn,oo,pp>
+    Xor16<a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,aa,bb,cc,dd,ee,ff,gg,hh,ii,jj,kk,ll,mm,nn,oo,pp>
+;
+
+
+// Copies a 16 bit array <a..p> to <aa..pp>.
+Copy16<a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,aa,bb,cc,dd,ee,ff,gg,hh,ii,jj,kk,ll,mm,nn,oo,pp> ::=
+    <. aa = a .><. bb = b .><. cc = c .><. dd = d .><. ee = e .><. ff = f .><. gg = g .><. hh = h .><. ii = i .><. jj = j .><. kk = k .><. ll = l .><. mm = m .><. nn = n .><. oo = o .><. pp = p .>
+;
+
+
+// Copies over an existing 16 bit array.
+Copy16x<a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,aa,bb,cc,dd,ee,ff,gg,hh,ii,jj,kk,ll,mm,nn,oo,pp> ::=
+    <. aa -= aa .> <. aa += a .>
+    <. bb -= bb .> <. bb += b .>
+    <. cc -= cc .> <. cc += c .>
+    <. dd -= dd .> <. dd += d .>
+    <. ee -= ee .> <. ee += e .>
+    <. ff -= ff .> <. ff += f .>
+    <. gg -= gg .> <. gg += g .>
+    <. hh -= hh .> <. hh += h .>
+    <. ii -= ii .> <. ii += i .>
+    <. jj -= jj .> <. jj += j .>
+    <. kk -= kk .> <. kk += k .>
+    <. ll -= ll .> <. ll += l .>
+    <. mm -= mm .> <. mm += m .>
+    <. nn -= nn .> <. nn += n .>
+    <. oo -= oo .> <. oo += o .>
+    <. pp -= pp .> <. pp += p .>
+;
+
+
+// <a> XOR <b>.
+Xor<a, b> ::=
+    <. a = 1 .> <. b = 1 .> "" <. a -= 1 .>
+    | <. a = 1 .> <. b = 0 .> ""
+    | <. a = 0 .> <. b = 1 .> "" <. a += 1 .>
+    | <. a = 0 .> <. b = 0 .> ""
+;
+
+
+// 16 bit XOR.
+Xor16<a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,aa,bb,cc,dd,ee,ff,gg,hh,ii,jj,kk,ll,mm,nn,oo,pp> ::=
+    Xor<a, aa>
+    Xor<b, bb>
+    Xor<c, cc>
+    Xor<d, dd>
+    Xor<e, ee>
+    Xor<f, ff>
+    Xor<g, gg>
+    Xor<h, hh>
+    Xor<i, ii>
+    Xor<j, jj>
+    Xor<k, kk>
+    Xor<l, ll>
+    Xor<m, mm>
+    Xor<n, nn>
+    Xor<o, oo>
+    Xor<p, pp>
+;
+
+
+// Iterated left and right bit-shifts.
+LS7<a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p> ::= <. repeat = 0 .> { LS<a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p> <. repeat += 1 .> } <. repeat > 6 .>;
+RS9<a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p> ::= <. repeat = 0 .> { RS<a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p> <. repeat += 1 .> } <. repeat > 8 .>;
+LS8<a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p> ::= <. repeat = 0 .> { LS<a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p> <. repeat += 1 .> } <. repeat > 7 .>;
+
+
+// Right-shift a 16 bit array by one.
+RS<a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p> ::=
+( <. && a = 1, b = 0 .> "" <. a -= 1 .>
+| <. && a = 0, b = 1 .> "" <. a += 1 .>
+| <. && a = 0, b = 0 .> ""
+| <. && a = 1, b = 1 .> "" )
+( <. && b = 1, c = 0 .> "" <. b -= 1 .>
+| <. && b = 0, c = 1 .> "" <. b += 1 .>
+| <. && b = 0, c = 0 .> ""
+| <. && b = 1, c = 1 .> "" )
+( <. && c = 1, d = 0 .> "" <. c -= 1 .>
+| <. && c = 0, d = 1 .> "" <. c += 1 .>
+| <. && c = 0, d = 0 .> ""
+| <. && c = 1, d = 1 .> "" )
+( <. && d = 1, e = 0 .> "" <. d -= 1 .>
+| <. && d = 0, e = 1 .> "" <. d += 1 .>
+| <. && d = 0, e = 0 .> ""
+| <. && d = 1, e = 1 .> "" )
+( <. && e = 1, f = 0 .> "" <. e -= 1 .>
+| <. && e = 0, f = 1 .> "" <. e += 1 .>
+| <. && e = 0, f = 0 .> ""
+| <. && e = 1, f = 1 .> "" )
+( <. && f = 1, g = 0 .> "" <. f -= 1 .>
+| <. && f = 0, g = 1 .> "" <. f += 1 .>
+| <. && f = 0, g = 0 .> ""
+| <. && f = 1, g = 1 .> "" )
+( <. && g = 1, h = 0 .> "" <. g -= 1 .>
+| <. && g = 0, h = 1 .> "" <. g += 1 .>
+| <. && g = 0, h = 0 .> ""
+| <. && g = 1, h = 1 .> "" )
+( <. && h = 1, i = 0 .> "" <. h -= 1 .>
+| <. && h = 0, i = 1 .> "" <. h += 1 .>
+| <. && h = 0, i = 0 .> ""
+| <. && h = 1, i = 1 .> "" )
+( <. && i = 1, j = 0 .> "" <. i -= 1 .>
+| <. && i = 0, j = 1 .> "" <. i += 1 .>
+| <. && i = 0, j = 0 .> ""
+| <. && i = 1, j = 1 .> "" )
+( <. && j = 1, k = 0 .> "" <. j -= 1 .>
+| <. && j = 0, k = 1 .> "" <. j += 1 .>
+| <. && j = 0, k = 0 .> ""
+| <. && j = 1, k = 1 .> "" )
+( <. && k = 1, l = 0 .> "" <. k -= 1 .>
+| <. && k = 0, l = 1 .> "" <. k += 1 .>
+| <. && k = 0, l = 0 .> ""
+| <. && k = 1, l = 1 .> "" )
+( <. && l = 1, m = 0 .> "" <. l -= 1 .>
+| <. && l = 0, m = 1 .> "" <. l += 1 .>
+| <. && l = 0, m = 0 .> ""
+| <. && l = 1, m = 1 .> "" )
+( <. && m = 1, n = 0 .> "" <. m -= 1 .>
+| <. && m = 0, n = 1 .> "" <. m += 1 .>
+| <. && m = 0, n = 0 .> ""
+| <. && m = 1, n = 1 .> "" )
+( <. && n = 1, o = 0 .> "" <. n -= 1 .>
+| <. && n = 0, o = 1 .> "" <. n += 1 .>
+| <. && n = 0, o = 0 .> ""
+| <. && n = 1, o = 1 .> "" )
+( <. && o = 1, p = 0 .> "" <. o -= 1 .>
+| <. && o = 0, p = 1 .> "" <. o += 1 .>
+| <. && o = 0, p = 0 .> ""
+| <. && o = 1, p = 1 .> "" )
+( <. p = 1 .> "" <. p -= 1 .>
+| <. p = 0 .> "")
+;
+
+
+// Left-shift a 16 bit array by one.
+LS<a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p> ::=
+( <. && p = 1, o = 0 .> "" <. p -= 1 .>
+| <. && p = 0, o = 1 .> "" <. p += 1 .>
+| <. && p = 0, o = 0 .> ""
+| <. && p = 1, o = 1 .> "" )
+( <. && o = 1, n = 0 .> "" <. o -= 1 .>
+| <. && o = 0, n = 1 .> "" <. o += 1 .>
+| <. && o = 0, n = 0 .> ""
+| <. && o = 1, n = 1 .> "" )
+( <. && n = 1, m = 0 .> "" <. n -= 1 .>
+| <. && n = 0, m = 1 .> "" <. n += 1 .>
+| <. && n = 0, m = 0 .> ""
+| <. && n = 1, m = 1 .> "" )
+( <. && m = 1, l = 0 .> "" <. m -= 1 .>
+| <. && m = 0, l = 1 .> "" <. m += 1 .>
+| <. && m = 0, l = 0 .> ""
+| <. && m = 1, l = 1 .> "" )
+( <. && l = 1, k = 0 .> "" <. l -= 1 .>
+| <. && l = 0, k = 1 .> "" <. l += 1 .>
+| <. && l = 0, k = 0 .> ""
+| <. && l = 1, k = 1 .> "" )
+( <. && k = 1, j = 0 .> "" <. k -= 1 .>
+| <. && k = 0, j = 1 .> "" <. k += 1 .>
+| <. && k = 0, j = 0 .> ""
+| <. && k = 1, j = 1 .> "" )
+( <. && j = 1, i = 0 .> "" <. j -= 1 .>
+| <. && j = 0, i = 1 .> "" <. j += 1 .>
+| <. && j = 0, i = 0 .> ""
+| <. && j = 1, i = 1 .> "" )
+( <. && i = 1, h = 0 .> "" <. i -= 1 .>
+| <. && i = 0, h = 1 .> "" <. i += 1 .>
+| <. && i = 0, h = 0 .> ""
+| <. && i = 1, h = 1 .> "" )
+( <. && h = 1, g = 0 .> "" <. h -= 1 .>
+| <. && h = 0, g = 1 .> "" <. h += 1 .>
+| <. && h = 0, g = 0 .> ""
+| <. && h = 1, g = 1 .> "" )
+( <. && g = 1, f = 0 .> "" <. g -= 1 .>
+| <. && g = 0, f = 1 .> "" <. g += 1 .>
+| <. && g = 0, f = 0 .> ""
+| <. && g = 1, f = 1 .> "" )
+( <. && f = 1, e = 0 .> "" <. f -= 1 .>
+| <. && f = 0, e = 1 .> "" <. f += 1 .>
+| <. && f = 0, e = 0 .> ""
+| <. && f = 1, e = 1 .> "" )
+( <. && e = 1, d = 0 .> "" <. e -= 1 .>
+| <. && e = 0, d = 1 .> "" <. e += 1 .>
+| <. && e = 0, d = 0 .> ""
+| <. && e = 1, d = 1 .> "" )
+( <. && d = 1, c = 0 .> "" <. d -= 1 .>
+| <. && d = 0, c = 1 .> "" <. d += 1 .>
+| <. && d = 0, c = 0 .> ""
+| <. && d = 1, c = 1 .> "" )
+( <. && c = 1, b = 0 .> "" <. c -= 1 .>
+| <. && c = 0, b = 1 .> "" <. c += 1 .>
+| <. && c = 0, b = 0 .> ""
+| <. && c = 1, b = 1 .> "" )
+( <. && b = 1, a = 0 .> "" <. b -= 1 .>
+| <. && b = 0, a = 1 .> "" <. b += 1 .>
+| <. && b = 0, a = 0 .> ""
+| <. && b = 1, a = 1 .> "" )
+( <. a = 1 .> "" <. a -= 1 .>
+| <. a = 0 .> "" )
+;
+
