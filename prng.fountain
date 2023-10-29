@@ -10,8 +10,8 @@ Goal ::=
         "seed in hex is: "
         Hex<a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p>
         #10
-        // "bitshift left by 7: "
-        RS9<a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p>
+        " Xorshift:"
+        Xorshift<a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p>
         //ArithmeticRS9<seed>
         //To16BitArray<seed,a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p>
         Hex<a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p>
@@ -59,8 +59,10 @@ Div2<a> ::=
   | <. a > 0 .> <. b = a .> { "" <. b -= 2 .> <. a -= 1 .> } <. b < 1 .>
 ;
 
+
 // Mult a by 2
 Mul2<a> ::= <. a += a .> "";
+
 
 // Return least significant bit of a (result overwrites a)
 Lsb<a> ::=
@@ -69,18 +71,58 @@ Lsb<a> ::=
   | <. a > 1 .> <. c = a .> Div2<c> Mul2<c> <. a -= c .>
 ;
 
-Shift<a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p> ::= "0x" Hex<m,n,o,p> Hex<i,j,k,l> Hex<e,f,g,h> Hex<a,b,c,d> LS8<a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p>;
+
+Xorshift<a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p> ::=
+    Copy16<a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,aa,bb,cc,dd,ee,ff,gg,hh,ii,jj,kk,ll,mm,nn,oo,pp>
+    LS7<aa,bb,cc,dd,ee,ff,gg,hh,ii,jj,kk,ll,mm,nn,oo,pp>
+    Xor16<a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,aa,bb,cc,dd,ee,ff,gg,hh,ii,jj,kk,ll,mm,nn,oo,pp>
+
+    Copy16B<a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,aa,bb,cc,dd,ee,ff,gg,hh,ii,jj,kk,ll,mm,nn,oo,pp>
+    RS9<aa,bb,cc,dd,ee,ff,gg,hh,ii,jj,kk,ll,mm,nn,oo,pp>
+    Xor16<a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,aa,bb,cc,dd,ee,ff,gg,hh,ii,jj,kk,ll,mm,nn,oo,pp>
+
+    Copy16B<a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,aa,bb,cc,dd,ee,ff,gg,hh,ii,jj,kk,ll,mm,nn,oo,pp>
+    LS8<aa,bb,cc,dd,ee,ff,gg,hh,ii,jj,kk,ll,mm,nn,oo,pp>
+    Xor16<a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,aa,bb,cc,dd,ee,ff,gg,hh,ii,jj,kk,ll,mm,nn,oo,pp>
+;
+
+
+// Copies a 16 bit array.
+Copy16<a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,aa,bb,cc,dd,ee,ff,gg,hh,ii,jj,kk,ll,mm,nn,oo,pp> ::=
+    <. aa = a .><. bb = b .><. cc = c .><. dd = d .><. ee = e .><. ff = f .><. gg = g .><. hh = h .><. ii = i .><. jj = j .><. kk = k .><. ll = l .><. mm = m .><. nn = n .><. oo = o .><. pp = p .>
+;
+
+
+// Copies over an existing 1b bit array.
+Copy16B<a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,aa,bb,cc,dd,ee,ff,gg,hh,ii,jj,kk,ll,mm,nn,oo,pp> ::=
+    <. aa -= aa .> <. aa += a .>
+    <. bb -= bb .> <. bb += b .>
+    <. cc -= cc .> <. cc += c .>
+    <. dd -= dd .> <. dd += d .>
+    <. ee -= ee .> <. ee += e .>
+    <. ff -= ff .> <. ff += f .>
+    <. gg -= gg .> <. gg += g .>
+    <. hh -= hh .> <. hh += h .>
+    <. ii -= ii .> <. ii += i .>
+    <. jj -= jj .> <. jj += j .>
+    <. kk -= kk .> <. kk += k .>
+    <. ll -= ll .> <. ll += l .>
+    <. mm -= mm .> <. mm += m .>
+    <. nn -= nn .> <. nn += n .>
+    <. oo -= oo .> <. oo += o .>
+    <. pp -= pp .> <. pp += p .>
+;
+
 
 Xor<a, b> ::= <. a = b .> "False" | "True";
 
-Xor16<a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,aa,bb,cc,dd,ee,ff,gg,hh,ii,jj,kk,ll,mm,nn,oo,pp> ::= ;
+
+Xor16<a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,aa,bb,cc,dd,ee,ff,gg,hh,ii,jj,kk,ll,mm,nn,oo,pp> ::=
+  ""
+;
 
 
-
-XS<a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p> ::= ;
-
-
-// Interated left and right bit-shifts.
+// Iterated left and right bit-shifts.
 LS7<a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p> ::= <. repeat = 0 .> { LS<a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p> <. repeat += 1 .> } <. repeat > 6 .>;
 RS9<a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p> ::= <. repeat = 0 .> { RS<a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p> <. repeat += 1 .> } <. repeat > 8 .>;
 LS8<a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p> ::= <. repeat = 0 .> { LS<a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p> <. repeat += 1 .> } <. repeat > 7 .>;
