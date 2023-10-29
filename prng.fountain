@@ -10,7 +10,7 @@ Goal ::=
         <. steps = 0 .> {
             Xs<a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p>
             ToInt<seed,a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p>
-            CoinToss<seed>
+            " : " CoinToss<seed> #10
             <. steps += 1 .>
         } <. steps > 50 .>
     )
@@ -18,9 +18,7 @@ Goal ::=
 
 
 CoinToss<n> ::=
-    " : "
     (<. n < 32768 .> "Heads" | <. n >= 32768 .> "Tails")
-    #10
 ;
 
 
@@ -30,6 +28,8 @@ Xs<a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p> ::=
     Hex<a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p>
 ;
 
+
+// Convert val to 16 bit array <a..p>.
 To16BitArray<val,a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p> ::=
     <. a = val .> Lsb<a>
     Div2<val>
@@ -65,6 +65,7 @@ To16BitArray<val,a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p> ::=
 ;
 
 
+// Convert 16 bit array <a..p> back to val.
 ToInt<val,a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p> ::=
     <. val -= val .>
     <. tmp = 1 .>
@@ -102,18 +103,18 @@ ToInt<val,a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p> ::=
 ;
 
 
-// Divide a by 2, result is an int
+// Divide <a> by 2, result is an int.
 Div2<a> ::=
     <. a = 0 .> ""
   | <. a > 0 .> <. b = a .> { "" <. b -= 2 .> <. a -= 1 .> } <. b < 1 .>
 ;
 
 
-// Mult a by 2
+// Mult <a> by 2.
 Mul2<a> ::= <. a += a .> "";
 
 
-// Return least significant bit of a (result overwrites a)
+// Return least significant bit of <a> (result overwrites <a>).
 Lsb<a> ::=
     <. a = 0 .> ""
   | <. a = 1 .> ""
@@ -121,29 +122,31 @@ Lsb<a> ::=
 ;
 
 
+// Xorshift algorithm (7, 9 ,8), from:
+// http://www.retroprogramming.com/2017/07/xorshift-pseudorandom-numbers-in-z80.html
 Xorshift<a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p> ::=
     Copy16<a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,aa,bb,cc,dd,ee,ff,gg,hh,ii,jj,kk,ll,mm,nn,oo,pp>
     LS7<aa,bb,cc,dd,ee,ff,gg,hh,ii,jj,kk,ll,mm,nn,oo,pp>
     Xor16<a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,aa,bb,cc,dd,ee,ff,gg,hh,ii,jj,kk,ll,mm,nn,oo,pp>
 
-    Copy16B<a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,aa,bb,cc,dd,ee,ff,gg,hh,ii,jj,kk,ll,mm,nn,oo,pp>
+    Copy16x<a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,aa,bb,cc,dd,ee,ff,gg,hh,ii,jj,kk,ll,mm,nn,oo,pp>
     RS9<aa,bb,cc,dd,ee,ff,gg,hh,ii,jj,kk,ll,mm,nn,oo,pp>
     Xor16<a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,aa,bb,cc,dd,ee,ff,gg,hh,ii,jj,kk,ll,mm,nn,oo,pp>
 
-    Copy16B<a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,aa,bb,cc,dd,ee,ff,gg,hh,ii,jj,kk,ll,mm,nn,oo,pp>
+    Copy16x<a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,aa,bb,cc,dd,ee,ff,gg,hh,ii,jj,kk,ll,mm,nn,oo,pp>
     LS8<aa,bb,cc,dd,ee,ff,gg,hh,ii,jj,kk,ll,mm,nn,oo,pp>
     Xor16<a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,aa,bb,cc,dd,ee,ff,gg,hh,ii,jj,kk,ll,mm,nn,oo,pp>
 ;
 
 
-// Copies a 16 bit array.
+// Copies a 16 bit array <a..p> to <aa..pp>.
 Copy16<a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,aa,bb,cc,dd,ee,ff,gg,hh,ii,jj,kk,ll,mm,nn,oo,pp> ::=
     <. aa = a .><. bb = b .><. cc = c .><. dd = d .><. ee = e .><. ff = f .><. gg = g .><. hh = h .><. ii = i .><. jj = j .><. kk = k .><. ll = l .><. mm = m .><. nn = n .><. oo = o .><. pp = p .>
 ;
 
 
-// Copies over an existing 1b bit array.
-Copy16B<a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,aa,bb,cc,dd,ee,ff,gg,hh,ii,jj,kk,ll,mm,nn,oo,pp> ::=
+// Copies over an existing 16 bit array.
+Copy16x<a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,aa,bb,cc,dd,ee,ff,gg,hh,ii,jj,kk,ll,mm,nn,oo,pp> ::=
     <. aa -= aa .> <. aa += a .>
     <. bb -= bb .> <. bb += b .>
     <. cc -= cc .> <. cc += c .>
@@ -163,6 +166,7 @@ Copy16B<a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,aa,bb,cc,dd,ee,ff,gg,hh,ii,jj,kk,ll,mm,n
 ;
 
 
+// <a> XOR <b>.
 Xor<a, b> ::=
     <. a = 1 .> <. b = 1 .> "" <. a -= 1 .>
     | <. a = 1 .> <. b = 0 .> ""
@@ -171,6 +175,7 @@ Xor<a, b> ::=
 ;
 
 
+// 16 bit XOR.
 Xor16<a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,aa,bb,cc,dd,ee,ff,gg,hh,ii,jj,kk,ll,mm,nn,oo,pp> ::=
     Xor<a, aa>
     Xor<b, bb>
@@ -337,11 +342,13 @@ LS<a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p> ::=
 ;
 
 
+// Display a 16 bit array as hex (0x0000 to 0xFFFF).
 Hex<a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p> ::=
     "0x" Nibble<m,n,o,p> Nibble<i,j,k,l> Nibble<e,f,g,h> Nibble<a,b,c,d>
 ;
 
 
+// Convert 4 bits (one nibble) to one hex digit.
 Nibble<a,b,c,d> ::=
  <. a = 0 .> <. b = 0 .> <. c = 0 .> <. d = 0 .> "0" |
  <. a = 1 .> <. b = 0 .> <. c = 0 .> <. d = 0 .> "1" |
@@ -359,4 +366,3 @@ Nibble<a,b,c,d> ::=
  <. a = 1 .> <. b = 0 .> <. c = 1 .> <. d = 1 .> "D" |
  <. a = 0 .> <. b = 1 .> <. c = 1 .> <. d = 1 .> "E" |
  <. a = 1 .> <. b = 1 .> <. c = 1 .> <. d = 1 .> "F" ;
-
