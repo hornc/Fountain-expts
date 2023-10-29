@@ -114,11 +114,31 @@ Copy16B<a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,aa,bb,cc,dd,ee,ff,gg,hh,ii,jj,kk,ll,mm,n
 ;
 
 
-Xor<a, b> ::= <. a = b .> "False" | "True";
+Xor<a, b> ::=
+    <. a = 1 .> <. b = 1 .> "" <. a -= 1 .>
+    | <. a = 1 .> <. b = 0 .> ""
+    | <. a = 0 .> <. b = 1 .> "" <. a += 1 .>
+    | <. a = 0 .> <. b = 0 .> ""
+;
 
 
 Xor16<a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,aa,bb,cc,dd,ee,ff,gg,hh,ii,jj,kk,ll,mm,nn,oo,pp> ::=
-  ""
+    Xor<a, aa>
+    Xor<b, bb>
+    Xor<c, cc>
+    Xor<d, dd>
+    Xor<e, ee>
+    Xor<f, ff>
+    Xor<g, gg>
+    Xor<h, hh>
+    Xor<i, ii>
+    Xor<j, jj>
+    Xor<k, kk>
+    Xor<l, ll>
+    Xor<m, mm>
+    Xor<n, nn>
+    Xor<o, oo>
+    Xor<p, pp>
 ;
 
 
