@@ -1,0 +1,33 @@
+// a*
+
+// fountain.exe parse a-star.fountain <(echo "aaaa")
+
+
+// Does not generate:
+// fountain.exe: Multiple pre-conditions are satisfied in Alt: (<. a = 1 .> Goal), (<. a = 1 .> "a"), (<. a = 1 .>)
+
+// Does not parse for the same reason:
+//     fountain.exe parse a-star.fountain <(echo "aaaa")
+// fountain.exe: Multiple pre-conditions are satisfied in Alt: (<. a = 1 .> Goal), (<. a = 1 .> "a"), (<. a = 1 .>), with state: Store {store = fromList [], events = []}
+
+
+// Specific parsing:
+//    fountain.exe parse a-star.fountain <(echo -n "") a=2 b=2
+// ===> Success
+
+//    fountain.exe parse a-star.fountain <(echo -n "a") a=2 c=2
+// ===> Success
+
+// but:
+//    fountain.exe parse a-star.fountain <(echo -n "a") a=1 b=2 c=2
+//fountain.exe: Multiple pre-conditions are satisfied in Alt: (<. a = 1 .> Goal), (<. b = 1 .> "a"), (<. c = 1 .>), with state: Store {store = fromList [], events = []}
+// I think I see what's happening here, the set variables are not present on the second pass of Goal so we get the above error. This seems fine.
+
+// This started with all alts sharing the same <. a = 1 .> pre-condition, but morphed into pre-conditions that could be differentiated.
+// It's not giving me the "a"* I wanted. Not sure there is a way to get that.
+
+Goal ::= 
+      <. a = 1 .> Goal
+    | <. b = 1 .> "a"
+    | <. c = 1 .> ""
+;

@@ -1,0 +1,19 @@
+// a{n}  , where n can be 0.
+
+// Generate:
+//    fountain.exe generate empty-terminals/a-n.fountain n=0
+//    fountain.exe generate empty-terminals/a-n.fountain n=7
+
+// Parse:
+//    fountain.exe parse empty-terminals/a-n.fountain <(echo -n "") n=0
+// ===> Success
+//    fountain.exe parse empty-terminals/a-n.fountain <(echo -n "aaaaaaa") n=7
+// ===> Success
+
+// This seems totally fine. Empty terminals cause no problems with generation or parsing.
+
+Goal ::= 
+      <. i = 0 .> <. n > i .> { "a" <. i += 1 .> } <. i >= n .>
+    | <. n = 0 .>
+;
+
