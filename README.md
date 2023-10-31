@@ -1,4 +1,4 @@
-# Fountain-expts
+# Fountain-exp'ts
 [Fountain](https://github.com/catseye/Fountain) CSL grammar experiments.
 
 
@@ -98,5 +98,5 @@ Blaschko throws the ball to Anise.
 Anise throws the ball to Blaschko. 
 ```
 
-Tested using Fountain 0.4. These examples may very well break in future. I haven't really thought through all the implications of this, but _parsing_ this output to verify the original seeds will be pretty neat, which seems like it is at least a theoretical possibility from Fountain's design. It's highly likely that I am abusing Fountain to use it more like a programming language than intended...
+Tested using [Fountain 0.4](https://github.com/catseye/Fountain/releases/tag/0.4). These examples may very well break in future. I haven't really thought through all the implications of this, but _parsing_ this output to verify the original seeds will be pretty neat, which seems like it is at least a theoretical possibility from Fountain's design. It's highly likely that I am abusing Fountain to use it more like a programming language than intended...
 
