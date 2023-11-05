@@ -1,0 +1,17 @@
+Goal ::=
+      <. a = b .> "same"
+    | <. a > b .> "diff"
+    | <. a < b .> "diff"
+;
+
+
+// fountain.exe parse same-diff.fountain <(echo -n "diff") a=32 b=34
+// ==> Success
+// fountain.exe parse same-diff.fountain <(echo -n "diff") a=37 b=34
+// ==> Success
+// fountain.exe parse same-diff.fountain <(echo -n "same") a=37 b=37
+// ==> Success
+// fountain.exe parse same-diff.fountain <(echo -n "diff") a=37 b=37
+// ==> Failure
+
+// All as expected.

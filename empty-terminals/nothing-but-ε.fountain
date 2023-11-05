@@ -1,0 +1,30 @@
+Goal ::= Empty<a> Empty<a>;
+
+
+Empty<a> ::=
+      <. a = 1 .> "" <. a += 3 .>
+    | <. a = 2 .> "" <. a -= 1 .>
+    | <. a = 4 .> <. a -= 4 .>
+;
+
+
+//   fountain.exe parse nothing-but-ε.fountain <(echo -n "") a=1
+// ===> Success
+//   fountain.exe parse nothing-but-ε.fountain <(echo -n "") a=2
+// ===> Success
+//   fountain.exe parse nothing-but-ε.fountain <(echo -n "") a=3
+// ===> Failure 
+//   fountain.exe parse nothing-but-ε.fountain <(echo -n "") a=4
+// ===> Failure 
+
+
+// This generates and parses empty strings and relates the empty input back to the variable correctly.
+// I thought it would be trivial to create a pathological example, but maybe not. Try harder.
+
+// These are nice results (but probably shouldn't be surprising at all...):
+// fountain.exe parse nothing-but-ε.fountain <(echo -n "test") a=1
+// ===> Remaining: "test"
+
+// fountain.exe parse nothing-but-ε.fountain <(echo -n "test") a=3
+// ===> Failure
+

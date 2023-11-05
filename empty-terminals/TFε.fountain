@@ -1,0 +1,24 @@
+
+//   fountain.exe parse TFε.fountain  <(echo -n "T") a=1
+// ===> Success
+//   fountain.exe parse TFε.fountain  <(echo -n "F") a=0
+// ===> Success
+//   fountain.exe parse TFε.fountain  <(echo -n "") a=123
+// ===> Success
+
+//   fountain.exe parse TFε.fountain  <(echo -n "T") a=-1
+// ===> Failure 
+//   fountain.exe parse TFε.fountain  <(echo -n "") a=1
+// ===> Failure 
+
+// fountain.exe generate TFε.fountain a=-1
+// ===> Failure 
+
+// All as expected, empty terminals don't appear to be a problem whether 
+// explicit as "", or simply implied after a bare pre-condition.
+
+Goal ::=
+      <. a = 1 .> "T"
+    | <. a = 0 .> "F"
+    | <. a > 1 .>
+;
